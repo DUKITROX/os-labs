@@ -1,0 +1,32 @@
+Cambios de "primes copy.c" (antiguo) a "primes.c" (nuevo)
+
+1) Parseo de argumentos en main
+- `if (argc = 2)` corregido a `if (argc == 2)`.
+- `atoi(argv[2]);` corregido a `n = atoi(argv[1]);`.
+
+Efecto: ahora se lee correctamente el argumento numérico y se asigna a `n`.
+
+2) Lógica de suma (sum)
+- `int total;` inicializado a `int total = 0;`.
+- `total =+ arr[i];` corregido a `total += arr[i];`.
+
+Efecto: la suma acumula correctamente los elementos del arreglo.
+
+3) Generación de primos (compute_primes)
+- Eliminado `x += 2;` dentro del `if`.
+- Añadido incremento incondicional `x++;` en cada iteración.
+
+Efecto: evita bucle infinito cuando `x` no es primo y avanza correctamente.
+
+4) Prueba de primalidad (is_prime)
+- Tratamiento de casos pequeños: `if (x < 2) return 0;` (antes se descartaban pares, incluido 2).
+- Bucle de divisores cambiado de `for (int i = 3; i < x; i += 2)` a `for (int i = 2; i < x; i++)`.
+
+Efecto: 2 se considera primo y se comprueban todos los divisores válidos (versión simple).
+
+Resumen
+- Se corrigen cuelgues por bucle infinito al generar primos.
+- Se arregla el parseo de argumentos y el acceso fuera de rango.
+- Se inicializa el acumulador y se corrige el operador de suma.
+- La verificación de primalidad es ahora correcta para `x >= 0`.
+
