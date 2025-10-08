@@ -1,0 +1,4 @@
+1 23.50 Primero
+2 47.80 Segundo
+3 12.30 Tercero
+Registros procesados: 3
