@@ -16,11 +16,7 @@ struct options{
 	io_mode_t output_mode;
 };
 
-struct options process_options(int argc, char* argv[]){
-	if(argc<3){
-		fprintf(stderr, "Uso: %s [-i t|b] [-o t|b] fichero_entrada fichero_salida\n", argv[0]);
-		exit(EXIT_FAILURE);
-	}
+struct options process_arguments(int argc, char* argv[]){
 
 	struct options options;
 	options.infile=NULL;
@@ -32,7 +28,7 @@ struct options process_options(int argc, char* argv[]){
 	while((opt = getopt(argc, argv, "hi:o:")) != -1) {
 		switch(opt) {
 		case 'h':
-			fprintf(stderr, "Uso: %s [-i t|b] [-o t|b] fichero_entrada fichero_salida\n", argv[0]);
+			fprintf(stderr, "Use: %s [-i t|b] [-o t|b] input_file output_file\n", argv[0]);
 			exit(0);
 		case 'i':
 			if(strcmp(optarg, "t") == 0){
@@ -60,13 +56,14 @@ struct options process_options(int argc, char* argv[]){
 	}
 
 	if(argc - optind < 2) {
-		fprintf(stderr, "Debe especificar fichero_entrada y fichero_salida\n");
+		fprintf(stderr, "input_file and output_file must be specified\n");
 		exit(EXIT_FAILURE);
 	}
 
 	char* input_filename = argv[optind];
 	char* output_filename = argv[optind + 1];
 
+	//open input file
 	if(strcmp(input_filename, "-") == 0) {
 		options.infile = stdin;
 	} else {
@@ -82,6 +79,7 @@ struct options process_options(int argc, char* argv[]){
 		}
 	}
 
+	//open output file
 	if(strcmp(output_filename, "-") == 0) {
 		options.outfile = stdout;
 	} else {
@@ -102,16 +100,18 @@ struct options process_options(int argc, char* argv[]){
 
 int main(int argc, char* argv[]){
 
-	struct options options = process_options(argc, argv);
+	struct options options = process_arguments(argc, argv);
 
 	SimpleRecord record;
-	int records_processed = 0;
+	int processed_records = 0;
 
-	while(1) {
+	while(++processed_records) {
 		if(options.input_mode == TEXT) {
-			if(fscanf(options.infile, "%d %lf %s", &record.id, &record.value, record.label) != 3) break;	
+			if(fscanf(options.infile, "%d %lf %s", &record.id, &record.value, record.label) != 3) 
+				break;	
 		}else if(options.input_mode == BINARY){
-			if(fread(&record, sizeof(SimpleRecord), 1, options.infile) != 1) break;
+			if(fread(&record, sizeof(SimpleRecord), 1, options.infile) != 1)
+				break;
 		}
 		
 		if(options.output_mode == TEXT) 
@@ -119,19 +119,20 @@ int main(int argc, char* argv[]){
 		else if(options.output_mode == BINARY)
 			fwrite(&record, sizeof(SimpleRecord), 1, options.outfile);
 
-		++records_processed;
+		++processed_records;
 	}
 
+	//close files if they were opened
 	if(options.infile != stdin) 
 		fclose(options.infile);
 	if(options.outfile != stdout) 
 		fclose(options.outfile);
 
-	printf("Registros procesados: %d\n", records_processed);
+	printf("Processed records: %d\n", processed_records);
 	return 0;
 }
 /*
-Algunos comandos para testear entrada y salida estandar:
+Some commands for testing stdio
 ./conversion -i t -o t - - < datos.txt 
 ./conversion -i b -o b - - < datos.bin 
 ./conversion -i t -o b - - < datos.txt > datos2.bin
