@@ -12,20 +12,38 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* Open file */
-	if ((file = fopen(argv[1], "r")) == NULL)
+	if ((file = fopen(argv[1], "rb")) == NULL)
 		err(2,"The input file %s could not be opened",argv[1]);
 
-	/* Read file byte by byte */
-	while ((c = getc(file)) != EOF) {
-		/* Print byte to stdout */
-		ret=putc((unsigned char) c, stdout);
+	unsigned char buffer[1024];
+	size_t n;
 
-		if (ret==EOF){
-			fclose(file);
-			err(3,"putc() failed!!");
-		}
+
+
+	/* Read file byte by byte */
+	while ((n = fread(buffer,1,sizeof(buffer)-1,file)) > 0) {
+		/* Print byte to stdout */
+		buffer[n] = '\0';
+		printf("%s", buffer);
+
+
+		int a[] = {1, 2, 3, 4, 5};
+    	int n = sizeof(a) / sizeof(a[0]);
+    
+    	fwrite(a, sizeof(int), n, file);
+
+
 	}
 
 	fclose(file);
+
+	file=fopen("output.bin", "wb");
+	if (file == NULL) {
+		perror("Error opening file for writing");
+		return 1;
+	}
+	fwrite(buffer, sizeof(unsigned char), n, file);
+	fclose(file);
+
 	return 0;
 }
