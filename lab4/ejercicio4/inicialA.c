@@ -14,18 +14,21 @@ int main(void)
 
     fd1 = open("output.txt", O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
     write(fd1, "00000", 5);
+
     for (i=1; i < 10; i++) {
-        pos = lseek(fd1, 0, SEEK_CUR); // check where the current file descriptor is
+		pos = lseek(fd1, 0, SEEK_CUR);
         if (fork() == 0) { /* Child */
+			// simplemente, al estar en el hijo, abrimos el archivo con un nuevo filedescriptor para no liarla
+			fd2 = open("output.txt", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
             sprintf(buffer, "%d", i*11111);
-            lseek(fd1, pos, SEEK_SET);
-            write(fd1, buffer, 5);
-            close(fd1);
+            lseek(fd2, pos, SEEK_SET);
+            write(fd2, buffer, 5);
+            close(fd2);
             exit(0);
         } else {  /* Parent */
-            lseek(fd1, 5, SEEK_CUR); // advances 5 positions (bytes i think) current file descriptor 
+            lseek(fd1, 5, SEEK_CUR); 
         }
-    }
+	}
 
 	//wait for all childs to finish
     while (wait(NULL) != -1);
