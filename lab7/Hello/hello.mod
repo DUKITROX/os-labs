@@ -1,0 +1,1 @@
+/home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/hello.o
