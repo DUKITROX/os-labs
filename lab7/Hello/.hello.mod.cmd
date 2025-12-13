@@ -1,0 +1,1 @@
+cmd_/home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/hello.mod := printf '%s\n'   hello.o | awk '!x[$$0]++ { print("/home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/"$$0) }' > /home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/hello.mod
