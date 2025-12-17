@@ -1,1 +1,0 @@
-cmd_/home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/modules.order := {   echo /home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/hello.ko; :; } > /home/christian/Documents/docencia/so/ssoo/Practicas/Codigos/practica7/alumnos/Hello/modules.order

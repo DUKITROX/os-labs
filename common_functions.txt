@@ -1,0 +1,67 @@
+CHULETA C (POSIX / SO) — minimal
+
+1) CLI / argumentos
+- getopt()  (optarg, optind)
+
+2) Memoria
+- malloc(), calloc(), realloc(), free()
+
+3) Strings
+- strlen()
+- strcpy()/strncpy()
+- strdup()
+- strsep()   (tokenizar)
+
+4) Ficheros (stdio)
+- fopen(), fclose()
+- getc()/putc()
+- fread(), fwrite()
+- fgets()
+- fseek(), ftell()
+- fprintf(), fscanf()
+
+5) Ficheros/dirs (syscalls POSIX)
+- open(), read(), write(), close()
+- lseek()
+- lstat() + macros S_ISDIR, etc
+- opendir(), readdir(), closedir()
+- readlink(), symlink()
+
+6) Procesos y ejecución
+- fork()
+- execvp()  (familia exec*)
+- wait(), waitpid() + WIFEXITED/WEXITSTATUS/WIFSIGNALED
+- exit() (y a veces _exit() en hijos)
+
+7) Señales
+- sigaction()
+- kill()
+- alarm()
+- señales típicas: SIGINT, SIGALRM, SIGKILL, SIGTERM
+
+8) Hilos (pthreads)
+- pthread_create(), pthread_join(), pthread_self()
+
+9) Mutex (pthreads)
+- pthread_mutex_init()/destroy()
+- pthread_mutex_lock()/trylock()/unlock()
+
+10) Variables condicionales (pthreads)
+- pthread_cond_init()/destroy()
+- pthread_cond_wait(&cv, &m)   (se llama con mutex; libera y re-adquiere)
+- pthread_cond_signal(), pthread_cond_broadcast()
+- REGLA: esperar siempre con while (!cond) pthread_cond_wait(...)
+
+Patrón productor-consumidor (idea)
+- 2 condvars: not_empty / not_full + un mutex + estado (count, cola)
+
+11) IPC POSIX
+- shm_open(), shm_unlink()
+- mmap(), munmap()
+- sem_open(), sem_wait(), sem_post(), sem_close(), sem_unlink()
+
+12) Errores / debug típico
+- errno
+- perror(), strerror()
+- snprintf() (mejor que sprintf)
+
