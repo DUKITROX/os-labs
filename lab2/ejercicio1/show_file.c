@@ -1,3 +1,9 @@
+/*
+ * Attempts to read a file in binary mode, print its contents to stdout,
+ * and then write sample integer data plus the last read buffer to disk.
+ * Serves as a basic exercise on FILE* usage, though writing to the same
+ * handle being read is generally unsafe and shown here only for practice.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
@@ -27,6 +33,7 @@ int main(int argc, char* argv[]) {
 		printf("%s", buffer);
 
 
+		/* Example data write using the same file handle (not typical). */
 		int a[] = {1, 2, 3, 4, 5};
     	int n = sizeof(a) / sizeof(a[0]);
     
@@ -37,6 +44,7 @@ int main(int argc, char* argv[]) {
 
 	fclose(file);
 
+	/* Write the last buffer contents to a separate binary file. */
 	file=fopen("output.bin", "wb");
 	if (file == NULL) {
 		perror("Error opening file for writing");

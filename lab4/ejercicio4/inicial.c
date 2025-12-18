@@ -1,3 +1,8 @@
+/*
+ * Demonstrates concurrent writes to a shared file descriptor across forked
+ * processes. Each child writes a five-digit number at its position, while
+ * the parent skips ahead to reserve space, then the file is printed.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -17,6 +22,7 @@ int main(void)
     for (i=1; i < 10; i++) {
         pos = lseek(fd1, 0, SEEK_CUR); // check where the current file descriptor is
         if (fork() == 0) { /* Child */
+            /* Child writes its marker at the offset captured before forking. */
             sprintf(buffer, "%d", i*11111);
             lseek(fd1, pos, SEEK_SET);
             write(fd1, buffer, 5);
@@ -30,6 +36,7 @@ int main(void)
 	//wait for all childs to finish
     while (wait(NULL) != -1);
 
+    /* Show the final contents after all children exit. */
     lseek(fd1, 0, SEEK_SET);
     printf("File contents are:\n");
     while (read(fd1, &c, 1) > 0)

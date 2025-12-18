@@ -1,3 +1,8 @@
+/*
+ * Writes an array of SimpleRecord structs to a binary file.
+ * Accepts the output filename as the sole argument and dumps three sample
+ * records with fwrite in a single call.
+ */
 #include<stdio.h>
 #include "record.h"
 
@@ -20,6 +25,7 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
+	/* Persist the entire array at once since the struct is POD. */
 	fwrite(records, sizeof(SimpleRecord), sizeof(records)/sizeof(SimpleRecord), file);
 	fclose(file);
 	printf("Registros escritos correctamente en %s.\n", output_filename);

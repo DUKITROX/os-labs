@@ -1,3 +1,9 @@
+/*
+ * Utility to read /etc/passwd-like files and print their entries.
+ * Supports selecting output format (verbose or pipe-delimited), custom
+ * delimiters, and alternate input/output files via command-line options.
+ * Demonstrates manual parsing of colon-separated fields into a struct array.
+ */
 #include <stdio.h>
 #include <unistd.h> /* for getopt() */
 #include <stdlib.h> /* for EXIT_SUCCESS, EXIT_FAILURE */
@@ -13,6 +19,7 @@
 static inline char* clone_string(char* original)
 {
 	char* copy;
+	/* Allocate one extra byte to store the terminating NUL. */
 	copy=malloc(strlen(original)+1);
 	strcpy(copy,original);
 	return copy;
@@ -41,6 +48,7 @@ passwd_entry_t* parse_passwd(struct options* options, int* nr_entries)
 	int entry_count=0;
 	int cur_line;
 
+	/* Use provided input file if present, otherwise default to /etc/passwd. */
 	if ((passwd=options->infile) == NULL && (passwd=fopen("/etc/passwd","r"))==NULL) {
 		fprintf(stderr, "/etc/passwd could not be opened: ");
 		perror(NULL);
@@ -78,9 +86,11 @@ passwd_entry_t* parse_passwd(struct options* options, int* nr_entries)
 		token_id=LOGIN_NAME_IDX;
 		cur_entry=&entries[entry_idx];
 
+		/* Split the line into tokens separated by the configured delimiter. */
 		while((token = strsep(&lineptr, &options->delimeter))!=NULL) {
 			switch(token_id) {
 			case LOGIN_NAME_IDX:
+				/* Fixed-size buffer, assume input is already bounded. */
 				strcpy(cur_entry->login_name,token);
 				break;
 			case ENCRYPTED_PASS_IDX:

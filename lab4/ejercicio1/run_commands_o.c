@@ -1,3 +1,8 @@
+/*
+ * Parses a quoted command line into argv-style tokens and prints the result.
+ * Serves as a helper/template for building a launch_command function that
+ * would fork/exec; currently launch_command is left unimplemented.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

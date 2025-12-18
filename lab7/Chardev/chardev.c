@@ -1,6 +1,7 @@
 /*
- *  chardev.c: Creates a read-only char device that says how many times
- *  you've read from the dev file
+ *  chardev.c: Simple read-only char device.
+ *  Counts how many times it has been opened and returns that tally in the
+ *  read message. Demonstrates manual registration of a character device.
  */
 
 #include <linux/kernel.h>
@@ -44,9 +45,8 @@ static struct file_operations fops = {
     .write = device_write,
     .open = device_open,
     .release = device_release,
-	/* Poniendo el campo owner a THIS_MODULE se hará un try_module_get antes de
-	 * invocar a open y un module_put tras invocar el close, actualizando así de
-	 * forma segura el contador de usuarios del módulo
+	/* Setting owner to THIS_MODULE safely bumps the module refcount during
+	 * open and drops it on close to prevent unloading while in use.
 	 */
 	.owner = THIS_MODULE
 };

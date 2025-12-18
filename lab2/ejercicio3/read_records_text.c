@@ -1,3 +1,8 @@
+/*
+ * Reads SimpleRecord structs from a text file and prints them.
+ * Expects a filename argument, parses each line with fscanf, and displays
+ * the fields until the input format fails or EOF is reached.
+ */
 #include<stdio.h>
 #include "record.h"
 
@@ -18,6 +23,7 @@ int main(int argc, char* argv[]){
 	SimpleRecord record;
 	// podrias poner solo "f" pero como nos puede entrar un double, mejor poner un "long float"
 	// ademas podrias comprobar tmbn while != EOF
+	/* Attempt to parse three fields per line; stop on any mismatch. */
 	while(fscanf(file, "%d %lf %s", &record.id, &record.value, record.label)==3){  
 		printf("ID: %d, Value %.2f, Label: %s\n", record.id, record.value, record.label);
 	}

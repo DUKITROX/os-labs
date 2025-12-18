@@ -1,3 +1,9 @@
+/*
+ * Opens a file with flags chosen from command-line options.
+ * -f <filename> specifies the path, -r opens for reading, -w for writing
+ * (or both for read/write). After opening, the program attempts a write
+ * and a read to illustrate access permissions.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -16,6 +22,7 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 
+    /* Parse mode flags and the target filename. */
     while ((opt = getopt(argc, argv, "f:rw")) != -1) {
         switch (opt) {
             case 'f':
@@ -42,10 +49,12 @@ int main(int argc, char* argv[]){
 	else if (wr)
 		flags = O_WRONLY | O_CREAT | O_TRUNC;
 
+	/* Attempt to open with the derived flags and default permissions. */
 	fd = open(filename, flags, 0644);
 	if (fd < 0)
 		perror("Error opening file");	
 
+	/* Write then read to showcase the consequences of the chosen flags. */
 	if(write(fd, "bomboclat", 10) < 0)
 		perror("Could not write file\n");
 

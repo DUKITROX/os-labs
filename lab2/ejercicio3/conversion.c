@@ -1,3 +1,9 @@
+/*
+ * Converter between text and binary representations of SimpleRecord.
+ * Accepts input/output mode flags (-i/-o with t|b) plus input and output
+ * filenames (or - for stdin/stdout). Streams records from the input,
+ * re-emitting them in the requested format.
+ */
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -21,6 +27,7 @@ struct options process_arguments(int argc, char* argv[]){
 	struct options options;
 	options.infile=NULL;
 	options.outfile=NULL;
+	/* Default to text input and output. */
 	options.input_mode=TEXT;
 	options.output_mode=TEXT;
 
@@ -105,6 +112,7 @@ int main(int argc, char* argv[]){
 	SimpleRecord record;
 	int processed_records = 0;
 
+	/* Loop until input parsing fails or EOF is hit. */
 	while(++processed_records) {
 		if(options.input_mode == TEXT) {
 			if(fscanf(options.infile, "%d %lf %s", &record.id, &record.value, record.label) != 3) 

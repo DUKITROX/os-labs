@@ -1,3 +1,8 @@
+/*
+ * Reads SimpleRecord structs from a binary file and prints them.
+ * Expects the input filename as the only argument and streams through the
+ * file with fread until no more records remain.
+ */
 #include<stdio.h>
 #include "record.h"
 
@@ -16,6 +21,7 @@ int main(int argc, char* argv[]){
 	}
 
 	SimpleRecord record;
+	/* Read one struct at a time until fread signals EOF. */
 	while(fread(&record, sizeof(SimpleRecord), 1, file) == 1){
 		printf("ID: %d, Value %.2f, Label: %s\n", record.id, record.value, record.label);
 	}

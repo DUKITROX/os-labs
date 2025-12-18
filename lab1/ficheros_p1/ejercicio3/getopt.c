@@ -1,3 +1,9 @@
+/*
+ * Command-line number sequence generator.
+ * Parses options with getopt to decide whether to print an odd or even
+ * progression, how many elements to output, and what title to display.
+ * Demonstrates basic option parsing and argument validation.
+ */
 #include <stdio.h>
 #include <unistd.h> 
 #include <stdlib.h> 
@@ -29,9 +35,11 @@ void usage() {
 void display_numbers ( int lenght, parity_t type, char * title) {
 	
 	int i,n;
+	/* Start at 1 for odd sequences or 2 for even sequences. */
 	int first = (type == ODD )? 1 : 2;
 	
 	printf("Title: %s\n",title);
+	/* Print the required number of terms, advancing by 2 each time. */
 	for (i=0,n=first; i<lenght; i++,n+=2) {
 		printf("%d ",n);
 	}
@@ -45,6 +53,7 @@ int main(int argc, char *argv[])
 	int  opt;
 	struct options options;
 
+	/* Keep a copy of argv[0] for usage output. */
 	progname = argv[0];
 
 	/* Initialize default values for options */
@@ -56,6 +65,7 @@ int main(int argc, char *argv[])
 	while((opt = getopt(argc, argv, "hel:")) != -1) {
 		switch(opt) {
 		case 'h':
+			/* Help exits immediately after printing usage text. */
 			usage();
 			exit(0);
 		case 'e':

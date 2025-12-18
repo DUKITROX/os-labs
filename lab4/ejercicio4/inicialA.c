@@ -1,3 +1,8 @@
+/*
+ * Variation of the concurrent write example where each child reopens the
+ * target file to get its own file descriptor. This avoids interference
+ * between parent and child file offsets while writing five-digit markers.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,7 +23,7 @@ int main(void)
     for (i=1; i < 10; i++) {
 		pos = lseek(fd1, 0, SEEK_CUR);
         if (fork() == 0) { /* Child */
-			// simplemente, al estar en el hijo, abrimos el archivo con un nuevo filedescriptor para no liarla
+			// simply reopen in the child to avoid sharing the parent's offset
 			fd2 = open("output.txt", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
             sprintf(buffer, "%d", i*11111);
             lseek(fd2, pos, SEEK_SET);

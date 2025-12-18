@@ -1,3 +1,8 @@
+/*
+ * Kernel module that turns all keyboard LEDs on when loaded and restores
+ * them when unloaded. Uses the current foreground console's tty driver to
+ * issue KDSETLED ioctl calls.
+ */
 #include <linux/module.h>
 #include <asm-generic/errno.h>
 #include <linux/init.h>
@@ -38,13 +43,13 @@ static inline int set_leds(struct tty_driver* handler, unsigned int mask)
 static int __init modleds_init(void)
 {
     kbd_driver= get_kbd_driver_handler();
-    set_leds(kbd_driver,ALL_LEDS_ON);
+    set_leds(kbd_driver,ALL_LEDS_ON); /* light Caps/Num/Scroll on load */
     return 0;
 }
 
 static void __exit modleds_exit(void)
 {
-    set_leds(kbd_driver,ALL_LEDS_OFF);
+    set_leds(kbd_driver,ALL_LEDS_OFF); /* return LEDs to default state */
 }
 
 module_init(modleds_init);

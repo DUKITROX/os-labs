@@ -1,3 +1,8 @@
+/*
+ * Tokenizes a quoted command line into argv entries and echoes the parsed
+ * arguments. Intended as a starting point for building a command launcher
+ * that would fork/exec using the generated argv array.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

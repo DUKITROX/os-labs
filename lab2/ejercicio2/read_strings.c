@@ -1,3 +1,8 @@
+/*
+ * Reads NUL-terminated strings from a binary file produced by write_strings.c.
+ * loadstr dynamically resizes a buffer to hold each string and returns it to
+ * the caller, who prints and frees it. Continues until EOF or read error.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,6 +76,7 @@ int main(int argc, char *argv[])
         free(str);
     }
 
+    /* Clean up and exit once all strings have been processed. */
     fclose(file);
     return 0;
 }

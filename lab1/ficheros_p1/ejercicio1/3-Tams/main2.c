@@ -1,3 +1,8 @@
+/*
+ * Reports addresses and sizes of various variables to illustrate memory
+ * layout. Compares stack variables, globals, arrays, and string literals
+ * while printing the pointer values they occupy.
+ */
 #include <stdio.h>
 
 
@@ -19,6 +24,7 @@ int main()
 {
 	pc = &x;
 	a = 16;
+	/* Print addresses and sizeof results for each declared object. */
 	printf("Address of a: %p Size: %lu \n",&a,sizeof(a));
 	printf("Address of b: %p Size: %lu \n",&b,sizeof(b));
 	printf("Address of c: %p Size: %lu \n",&c,sizeof(c));

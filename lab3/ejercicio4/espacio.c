@@ -1,3 +1,8 @@
+/*
+ * Recursively computes disk usage (in kilobytes) for files or directories.
+ * Mimics a simplified `du`: lstat gathers the block count and recursion
+ * walks child entries, skipping "." and "..".
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,7 +16,7 @@ long size_in_kb(const char *path) {
     struct stat info;
     if (lstat(path, &info) == -1) return 0;
 
-    long total = info.st_blocks/2;
+    long total = info.st_blocks/2; /* st_blocks is in 512-byte units */
 if (S_ISDIR(info.st_mode)) {
         DIR *dir = opendir(path);
         if (!dir) return total;
@@ -24,6 +29,7 @@ if (S_ISDIR(info.st_mode)) {
             char fullpath[1024];
             snprintf(fullpath, sizeof(fullpath), "%s/%s", path, entry->d_name);
 
+            /* Accumulate usage of each child entry. */
             total += size_in_kb(fullpath);
         }
         closedir(dir);
@@ -40,6 +46,7 @@ int main (int argc, char *argv[]){
     }
 
     for (int i = 1; i < argc; i++) {
+        /* Calculate and print kilobytes consumed by each argument. */
         long kb = size_in_kb(argv[i]);
         printf("%ldK %s\n", kb, argv[i]);
     }

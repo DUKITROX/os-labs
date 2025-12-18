@@ -1,3 +1,8 @@
+/*
+ * Auto-generated module metadata for hello.c.
+ * Captures vermagic, init/exit entry points, and symbol versions for the
+ * kernel module loader.
+ */
 #include <linux/module.h>
 #define INCLUDE_VERMAGIC
 #include <linux/build-salt.h>
@@ -36,4 +41,3 @@ __used __section("__versions") = {
 };
 
 MODULE_INFO(depends, "");
-

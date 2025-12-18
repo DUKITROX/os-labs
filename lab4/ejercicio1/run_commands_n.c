@@ -1,3 +1,9 @@
+/*
+ * Minimal command runner with two modes:
+ *  -x "<cmd>": tokenizes and executes a single command line.
+ *  -s <file>: reads commands from a file and runs them sequentially,
+ * waiting for each to finish. Uses fork/execvp to launch processes.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,6 +104,7 @@ int main(int argc, char *argv[]) {
           switch(opt) {
                 case 'x':
                          
+			/* Execute a single inline command string. */
 			cmd_argv = parse_command(optarg, &cmd_argc); 
 			pid_t pid = launch_command(cmd_argv); 
 			if(pid < 0) exit(1); 
@@ -141,4 +148,3 @@ int main(int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
-

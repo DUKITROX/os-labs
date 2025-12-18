@@ -1,3 +1,9 @@
+/*
+ * Nightclub simulation with VIP priority. Clients take turns based on a
+ * ticketing system, enter only when capacity allows, dance for a random
+ * duration, and then leave. VIP clients are allowed to jump the queue
+ * ahead of normal clients waiting with higher ticket numbers.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,25 +30,24 @@ pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t myturn = PTHREAD_COND_INITIALIZER;
 
 /*
-pro tip : siempre haz "lock" y "unlock" y luego ves dnd los mueves
-para esto piensa en el eg. de coger un ticket en la pescaderia y esperar tu turno
-mirando la pantalla (las pantallas seran variables globales, pues todos tiene que leerlas)
-*/
+ * Think of this as a deli counter: everyone grabs a ticket and waits for
+ * their number on the screen. The screen counters are shared globals and
+ * every thread must lock around reads/writes to avoid races.
+ */
 
 void arrive_client(client_t* client) {
 	pthread_mutex_lock(&m);
 	client->myturn = (client->is_vip) ? counter_vip++ : counter++;
 
 	printf("Client %d (%s) recieves his turn (%d)\n", client->id, VIPSTR(client->is_vip), client->myturn);
-	fflush(stdout); // fuerza al OS a imprimir YA, como tenemos varias hebras queremos que salga cuanto antes
+	fflush(stdout); // flush promptly so interleaved threads are readable
 
 	// while en vez de wait para evitar efectos de carrera
 	if(client->is_vip){
-		// podrias poner clients_inside == CAPACITY, pero los "==" tardan mas que un "<=", manias internas de jlrisco...
+		// Could be == CAPACITY; <= is slightly cheaper and equivalent here.
 		vips_waiting++;
 		while((client->myturn != vip_turn) || (clients_inside >= CAPACITY)) { 
-			// intentamos de primeras usar solo 1 vairable, todos van a la misma cola y se van peleando
-			// los vips adelantan (esto en vez de tener 2 colas).
+			// VIPs wait for their ticket and capacity, then cut ahead of normals.
 			pthread_cond_wait(&myturn , &m);
 		}
 	}
@@ -60,7 +65,7 @@ void enter_and_dance(client_t* client) {
 
 	clients_inside++;
 	if(client->is_vip) {
-		vips_waiting--; // de momento lo ponemos aqui, luego vemos dnd lo dejamos
+		vips_waiting--; // decrement VIP queue once admitted
 		vip_turn++;
 	}
 	else{
@@ -69,10 +74,10 @@ void enter_and_dance(client_t* client) {
 	int seconds = rand()%6 + 3; // [3,9) segundos bailados
 
 	printf("Client %d (%s) is inside and is dancing for %d seconds.\n", client->id, VIPSTR(client->is_vip), seconds);
-	fflush(stdout); // fuerza al OS a imprimir YA, como tenemos varias hebras queremos que salga cuanto antes
-	pthread_cond_broadcast(&myturn); // IMPORTANTE!! MUCHO OJO CON ESTO, usar broadcast y NO signal, porque consignal despertaria solo a 1 de los encolados, puedes freir el sistema
+	fflush(stdout); // flush promptly so prints from all threads are visible
+	pthread_cond_broadcast(&myturn); // wake everyone so the next eligible client can enter
 	pthread_mutex_unlock(&m);
-	sleep(seconds); // esta es la parte paralela para que bailen todos a la vez punchi punchi!
+	sleep(seconds); // simulate dancing concurrently
 }
 
 void exit_client(client_t* client) {
@@ -80,7 +85,7 @@ void exit_client(client_t* client) {
 	clients_inside--;
 	printf("Client %d (%s) leaves the local.\n", client->id, VIPSTR(client->is_vip));
 	fflush(stdout);
-	pthread_cond_broadcast(&myturn); // vuelves a hacer un broadcast para despertar a todos y que se vuelvan a pegar para ver quien entra
+	pthread_cond_broadcast(&myturn); // notify others that a spot freed up
 	pthread_mutex_unlock(&m);
 }
 
@@ -111,14 +116,14 @@ int main(int argc, char *argv[])
 		clients[i].myturn = -1;
 		fscanf(file, " %d", &clients[i].is_vip);
 
-		// creo un thread con este cliente intentando bailar
+		// Spawn a thread representing this client trying to enter.
 		pthread_create(th_clients + i, NULL, client, (void*)(clients + i)); 
 	}
 
 	/*
-	Si te dan libertad, tienes que dicidir si usar mutex + variables condicionales o semaforos.
-	Aqui como tenemos tantas condiciones, mejor mutex + variables condicionales. Mas easy es esto
-	pero la forma pro de hacerlo es con semaforos.
+	If given a choice between mutex/condition variables and semaphores,
+	conditional variables are clearer here because of the multiple wait
+	conditions (turn number, VIP precedence, and capacity).
 	*/
 
 	// cierro los threads

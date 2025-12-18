@@ -1,3 +1,8 @@
+/*
+ * Another concurrent write variant: the parent writes placeholder zeros
+ * before each fork, and each child reopens the file to overwrite its slot
+ * with a unique five-digit number. Offsets are coordinated via lseek.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
